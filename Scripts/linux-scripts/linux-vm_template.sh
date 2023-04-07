@@ -2,7 +2,7 @@
 #--------------------------------------------------------------------------------
 
 # Üzerine düşünülmesi gerekenler:
-# - Karmaşık olan ve PlainText olmayan bir şifre entegre edebilir miyiz?
+# ✅Karmaşık olan ve PlainText olmayan bir şifre entegre edebilir miyiz?
 # ✅ lvcreate komutunda 01 yerine farklı bir isim vermeyi düşünürsek değeri değişkenle alabiliriz. Aldığımız taktirde LV ismine bağlı komutlarda değişkeni belirtmemiz gerekir.
 # ✅ mkfs komutunda oluşturacağımız dosya sistemini değişken olarak alabiliriz.
 
@@ -36,8 +36,9 @@ hostname(){
 users(){
 	# Bu fonksiyon userArray dizisindeki her elemanı kullanıcı olarak sisteme ekler. Şifre süresini 365 gün olarak değiştirir.
 	for user in "${userArray[@]}";do
-	#useradd $user ->
-	adduser $user
+	useradd $user
+	echo "$user hesabı için bir şifre girin:"
+	passwd $user
 	chage -M 365 $user # Bir şifrenin yaşayabileceği maksimum süre. (Gün cinsinden.)
 	done
 }

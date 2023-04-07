@@ -1,0 +1,21 @@
+# 07.04.2023 Melih Selami Urkmez
+
+OUTPUT_DIR=./kubernetes-yaml-files
+KUBECONFIG_NAME=
+
+mkdir -p $OUTPUT_DIR
+
+
+
+namespaces=($(kubectl get namespaces --kubeconfig $KUBECONFIG_NAME -o jsonpath='{.items[*].metadata.name}'))
+
+for namespace in "${namespaces[@]}"
+do
+for RESOURCE_KIND in  $(kubectl api-resources --kubeconfig $KUBECONFIG_NAME --verbs=list --namespaced -o name); do
+     if [[ $RESOURCE_KIND != "endpoints" && $RESOURCE_KIND != "events" && $RESOURCE_KIND != "namespaces" ]]; then
+            kubectl get $RESOURCE_KIND -n $namespace --kubeconfig $KUBECONFIG_NAME -o yaml > $OUTPUT_DIR/$namespace-$RESOURCE_KIND.yaml
+        fi
+done
+done
+
+echo "All Kubernetes yaml files exported to $OUTPUT_DIR directory."
