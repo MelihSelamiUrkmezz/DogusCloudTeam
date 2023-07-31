@@ -1,0 +1,17 @@
+$OUTPUT_DIR = ".\kubernetes-yaml-files"
+
+mkdir $OUTPUT_DIR -Force | Out-Null
+
+$namespaces = (kubectl get namespaces -o jsonpath='{.items[*].metadata.name}') -split " "
+
+foreach ($namespace in $namespaces) {
+    $resourceKinds = (kubectl api-resources --verbs=list --namespaced -o name) -split " "
+    
+    foreach ($RESOURCE_KIND in $resourceKinds) {
+        if ($RESOURCE_KIND -ne "endpoints" -and $RESOURCE_KIND -ne "events" -and $RESOURCE_KIND -ne "namespaces") {
+            kubectl get $RESOURCE_KIND -n $namespace -o yaml | Out-File "$OUTPUT_DIR\$namespace-$RESOURCE_KIND.yaml"
+        }
+    }
+}
+
+Write-Host "All Kubernetes yaml files exported to $OUTPUT_DIR directory."
